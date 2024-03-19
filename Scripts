@@ -1,0 +1,111 @@
+#Initial sizing utilising the Roskam method.
+
+# Weight_takeoff
+# Weight_empty
+# Weight_fuel
+# Thrust_takeoff
+# P_to
+# S
+# A
+# C_l_max
+# C_l_max_to
+# C_l_max_l
+
+#You will need:
+    # Weight_takeoff (guess)
+    # Weight_fuel
+    # Weight_payload
+
+# then determine
+# Weight_empty from another section.
+
+
+#For RC and battery driven aircraft the flight weight is unchanging, and there is essentially 0 trapped fuel weight, simplifying analysis significantly.
+Weight_fuel = Weight_battery
+Weight_trapped_fuel = 0
+Weight_crew = 0
+#Hence Weight_operating_empty = Weight_empty for RC craft.
+
+Weight_takeoff = Weight_operating_empty + Weight_fuel + Weight_payload
+
+Weight_operating_empty = Weight_empty + Weight_trapped_fuel + Weight_crew
+
+Weight_empty = Weight_manufacturing_empty + Weight_fixed_equipment
+
+#Weight_fuel should be easy to estimate from basic flight profiles
+#log Weight_takeoff and log Weight_empty maintain a linear relationship for the twelve types of aircraft.
+
+#Step 1. Determine the mission payload weight Weight_payload
+#Step 2. Guess Weight_takeoff
+#Step 3. Determine Weight_fuel
+#Step 4. Calculate tentative value for Weight_operating_empty from:
+#       Weight_operating_empty(tentative) = Weight_takeoff(guess) - Weight_fuel - Weight_payload
+#Step 5. Calculate a tentative value for Weight_empty from:
+#       Weight_empty(tentative) = Weight_operating_empty(tentative) - Weight_trapped_fuel -Weight_crew
+#       Weight of trapped fuel can be as high as 0.5% of takeoff weight, but is often neglected at this early stage.
+#Step 6.    Find allowable value of Weight_empty from section 2.5
+#Step 7.    Compare the tentative and referenced values of Weight_empty, and iterate Weight takeoff until empty weight values align. (typically within 0.5%
+
+#Weight in pounds
+# if long_flight:
+#     Weight_crew = 175 + 40
+# else:
+#     Weight_crew = 175 + 30
+#
+# if military:
+#     Weight_crew = 200
+
+#Weight in Kg
+if long_flight:
+    Weight_crewmember = 79.3787 + 18.1437
+else:
+    Weight_crewmember = 79.3787 + 13.6078
+
+if military:
+    Weight_crewmember = 90.7185
+
+Weight_crew = number_of_crew * Weight_crewmember
+
+
+
+Weight_payload = Weight_passengers + Weight_baggage + Weight_cargo + Weight_mission_equipment + Weight_ammunition #For military aircraft
+
+Weight_passengers = Weight_passenger * num_passengers #Weight estimations for passengers are the same as crewmembers for commercial flights.
+
+#2.3 Guessing a likely value of take-off weight, Weight_takeoff
+#Initial guess of the value of takeoff weight, obtained by comparing the mission specificaiton of the aircraft with the
+# mission capabilities of similar airplanes listed in reference 9. Or make a Guess.
+
+
+#2.4 Determination of mission fuel weight. Weight_fuel
+Weight_fuel= weight_fuel_used + weight_fuel_reesrve
+
+#Weight reserve is specified as:
+    #1) a fraction of weight_fuel_used
+    #2) as a requirement for additional range to reach an alternate airport
+    #3) as a requirement for additional loiter time
+
+#To determine Weight_fuel_used, the fuel weight actually used during the mission, (the fuel fraction method) is used.
+# In this method the airplane mission is broken down into a number of numbered mission phases. The fuel used each phase
+# is found from a simple calculation or estimated from experience. Each phase has a beginning and an end weight
+# associated with it.
+
+#TODO I'm skipping this part(fuel weight fraction) as we're not designing to fuel and it's tricky to code in. Someone else can code this in
+# at their leisure if they wish to design aircraft with it, and I'll include it in the repository.
+
+#todo Although, electric propulsion we should still design for mission stages, just with flight performance
+# requirements, and energy requirements to size the battery. we may need to devise a similar but distinct methodology.
+
+#2.5 (p17)
+
+# 3 Estimating wing Area, Take off thrust, Take off power, Maximum lift.
+#In addition to range, endurance and cruise objectives, airplanes are usually designed to meet performance objectives:
+
+    #a. Stall speed
+    #b. Takeoff field length
+    #c. Landing field length
+    #d. Cruise speed(or max speed)
+    #e. Climb rate (all engines, or one engine inoperative)
+    #f. Time to climb to some altitude
+    #g. Maneuvering
+
